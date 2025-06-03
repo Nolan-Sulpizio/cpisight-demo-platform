@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPIsight Dashboard Wireframes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8faf9;
+            color: #1a1a1a;
+        }
+
+        .wireframe-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #2d5a3d;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .wireframe-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .wireframe-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2d5a3d;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Mobile Wireframe */
+        .mobile-frame {
+            width: 280px;
+            height: 600px;
+            border: 3px solid #333;
+            border-radius: 24px;
+            margin: 0 auto;
+            background: #000;
+            padding: 8px;
+            position: relative;
+        }
+
+        .mobile-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mobile-header {
+            background: rgba(255,255,255,0.95);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-weight: bold;
+            color: #2d5a3d;
+            font-size: 1.1rem;
+        }
+
+        .search-bar {
+            background: #f1f3f4;
+            border-radius: 20px;
+            padding: 8px 16px;
+            width: 140px;
+            border: none;
+            font-size: 0.8rem;
+        }
+
+        .feed-container {
+            padding: 16px;
+            height: calc(100% - 70px);
+            overflow-y: auto;
+        }
+
+        .feed-card {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .alert-card {
+            border-left: 4px solid #ff4757;
+        }
+
+        .insight-card {
+            border-left: 4px solid #3742fa;
+        }
+
+        .metric-card {
+            border-left: 4px solid #2ed573;
+        }
+
+        .action-card {
+            border-left: 4px solid #ffa502;
+        }
+
+        .card-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .alert-icon { background: #ff4757; }
+        .insight-icon { background: #3742fa; }
+        .metric-icon { background: #2ed573; }
+        .action-icon { background: #ffa502; }
+
+        .card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card-time {
+            font-size: 0.6rem;
+            color: #999;
+            margin-left: auto;
+        }
+
+        .card-content {
+            padding: 0 16px 12px;
+        }
+
+        .card-metric {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2d5a3d;
+            margin-bottom: 4px;
+        }
+
+        .card-description {
+            font-size: 0.7rem;
+            color: #666;
+            line-height: 1.3;
+        }
+
+        .card-chart {
+            height: 40px;
+            background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+            margin: 8px 0;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 2px;
+            background: #1976d2;
+            border-radius: 1px;
+        }
+
+        /* Desktop Wireframe */
+        .desktop-frame {
+            width: 100%;
+            height: 500px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #f5f5f5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .desktop-header {
+            background: white;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #f1f3f4;
+            color: #666;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .nav-tab.active {
+            background: #2d5a3d;
+            color: white;
+        }
+
+        .desktop-content {
+            display: grid;
+            grid-template-columns: 300px 1fr 280px;
+            height: calc(100% - 70px);
+        }
+
+        .sidebar {
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px;
+        }
+
+        .filter-section {
+            margin-bottom: 24px;
+        }
+
+        .filter-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .filter-option {
+            padding: 6px 12px;
+            margin: 4px 0;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .filter-option.active {
+            background: #e8f5e8;
+            color: #2d5a3d;
+        }
+
+        .main-feed {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .desktop-card {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .desktop-card-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .desktop-card-content {
+            padding: 20px;
+        }
+
+        .insights-panel {
+            background: white;
+            border-left: 1px solid #e0e0e0;
+            padding: 20px;
+        }
+
+        .insight-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .insight-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d5a3d;
+        }
+
+        .insight-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Key Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d5a3d;
+            margin-bottom: 12px;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Comparison Section */
+        .comparison {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .comparison h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .vs-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 40px;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .competitor-side {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .vs-divider {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .wireframe-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .vs-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .vs-divider {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-container">
+        <div class="header">
+            <h1>CPIsight Dashboard Wireframes</h1>
+            <p>"Instagram for Data" - Revolutionary Food Waste Analytics</p>
+        </div>
+
+        <div class="wireframe-grid">
+            <!-- Mobile Wireframe -->
+            <div class="wireframe-section">
+                <h2 class="section-title">Mobile-First Activity Feed</h2>
+                <div class="mobile-frame">
+                    <div class="mobile-screen">
+                        <div class="mobile-header">
+                            <div class="logo">CPIsight</div>
+                            <input type="text" class="search-bar" placeholder="Search insights...">
+                            <div style="width: 20px; height: 20px; background: #2d5a3d; border-radius: 50%;"></div>
+                        </div>
+                        
+                        <div class="feed-container">
+                            <!-- Alert Card -->
+                            <div class="feed-card alert-card">
+                                <div class="card-header">
+                                    <div class="card-icon alert-icon">!</div>
+                                    <div class="card-title">Critical Waste Alert</div>
+                                    <div class="card-time">2m ago</div>
+                                </div>
+                                <div class="card-content">
+                                    <div class="card-metric">73.6%</div>
+                                    <div class="card-description">Chickpea wraps showing unusually high waste. Consider reducing portions or checking preparation timing.</div>
+                                </div>
+                            </div>
+
+                            <!-- Insight Card -->
+                            <div class="feed-card insight-card">
+                                <div class="card-header">
+                                    <div class="card-icon insight-icon">💡</div>
+                                    <div class="card-title">Daily Insight</div>
+                                    <div class="card-time">1h ago</div>
+                                </div>
+                                <div class="card-content">
+                                    <div class="card-description">Peak waste occurs between 6:30-7:30 PM. Dinner service optimization recommended.</div>
+                                    <div class="card-chart">
+                                        <div class="chart-line"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Metric Card -->
+                            <div class="feed-card metric-card">
+                                <div class="card-header">
+                                    <div class="card-icon metric-icon">📊</div>
+                                    <div class="card-title">Today's Performance</div>
+                                    <div class="card-time">Live</div>
+                                </div>
+                                <div class="card-content">
+                                    <div class="card-metric">34.8%</div>
+                                    <div class="card-description">Average waste rate today. Down 5.2% from yesterday!</div>
+                                </div>
+                            </div>
+
+                            <!-- Action Card -->
+                            <div class="feed-card action-card">
+                                <div class="card-header">
+                                    <div class="card-icon action-icon">⚡</div>
+                                    <div class="card-title">Suggested Action</div>
+                                    <div class="card-time">3h ago</div>
+                                </div>
+                                <div class="card-content">
+                                    <div class="card-description">Reduce fried chicken batch sizes after 6 PM to prevent waste. Potential savings: $180/week</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Wireframe -->
+            <div class="wireframe-section">
+                <h2 class="section-title">Desktop Dashboard Layout</h2>
+                <div class="desktop-frame">
+                    <div class="desktop-header">
+                        <div class="logo" style="font-size: 1.3rem;">CPIsight Dashboard</div>
+                        <div class="nav-tabs">
+                            <div class="nav-tab active">Feed</div>
+                            <div class="nav-tab">Analytics</div>
+                            <div class="nav-tab">Reports</div>
+                            <div class="nav-tab">Settings</div>
+                        </div>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <div style="width: 8px; height: 8px; background: #2ed573; border-radius: 50%;"></div>
+                            <span style="font-size: 0.8rem; color: #666;">Live</span>
+                        </div>
+                    </div>
+                    
+                    <div class="desktop-content">
+                        <!-- Sidebar Filters -->
+                        <div class="sidebar">
+                            <div class="filter-section">
+                                <div class="filter-title">Time Range</div>
+                                <div class="filter-option active">Today</div>
+                                <div class="filter-option">This Week</div>
+                                <div class="filter-option">This Month</div>
+                            </div>
+                            
+                            <div class="filter-section">
+                                <div class="filter-title">Food Categories</div>
+                                <div class="filter-option active">All Items</div>
+                                <div class="filter-option">Hot Entrees</div>
+                                <div class="filter-option">Sandwiches</div>
+                                <div class="filter-option">Sauces</div>
+                            </div>
+                            
+                            <div class="filter-section">
+                                <div class="filter-title">Alert Level</div>
+                                <div class="filter-option">Critical</div>
+                                <div class="filter-option active">High</div>
+                                <div class="filter-option">Medium</div>
+                                <div class="filter-option">Low</div>
+                            </div>
+                        </div>
+
+                        <!-- Main Feed -->
+                        <div class="main-feed">
+                            <div class="desktop-card alert-card">
+                                <div class="desktop-card-header">
+                                    <div class="card-icon alert-icon">!</div>
+                                    <div>
+                                        <div class="card-title" style="font-size: 1rem;">Critical Waste Threshold Exceeded</div>
+                                        <div style="font-size: 0.8rem; color: #999;">Chickpea Lettuce Wraps • 2 minutes ago</div>
+                                    </div>
+                                </div>
+                                <div class="desktop-card-content">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                        <div>
+                                            <div class="card-metric" style="font-size: 2rem;">73.6%</div>
+                                            <div class="card-description">Waste rate significantly above 45% threshold</div>
+                                        </div>
+                                        <div style="background: #f8f9fa; border-radius: 8px; padding: 12px;">
+                                            <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 8px;">Recommended Actions:</div>
+                                            <div style="font-size: 0.8rem; color: #666; line-height: 1.4;">
+                                                • Check prep timing and storage<br>
+                                                • Reduce portion sizes by 15%<br>
+                                                • Monitor next 2 hours closely
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="desktop-card metric-card">
+                                <div class="desktop-card-header">
+                                    <div class="card-icon metric-icon">📊</div>
+                                    <div>
+                                        <div class="card-title" style="font-size: 1rem;">Live Performance Dashboard</div>
+                                        <div style="font-size: 0.8rem; color: #999;">Updated every 30 seconds</div>
+                                    </div>
+                                </div>
+                                <div class="desktop-card-content">
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                                        <div style="text-align: center;">
+                                            <div class="card-metric" style="font-size: 1.8rem;">34.8%</div>
+                                            <div class="card-description">Overall Waste Rate</div>
+                                        </div>
+                                        <div style="text-align: center;">
+                                            <div class="card-metric" style="font-size: 1.8rem; color: #2ed573;">-5.2%</div>
+                                            <div class="card-description">vs Yesterday</div>
+                                        </div>
+                                        <div style="text-align: center;">
+                                            <div class="card-metric" style="font-size: 1.8rem;">1,247</div>
+                                            <div class="card-description">Plates Analyzed</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Insights Panel -->
+                        <div class="insights-panel">
+                            <div style="font-weight: 600; margin-bottom: 16px; color: #2d5a3d;">Quick Insights</div>
+                            
+                            <div class="insight-item">
+                                <div class="insight-value">$180</div>
+                                <div class="insight-label">Weekly savings potential</div>
+                            </div>
+                            
+                            <div class="insight-item">
+                                <div class="insight-value">67%</div>
+                                <div class="insight-label">Peak waste time (6:30-7:30 PM)</div>
+                            </div>
+                            
+                            <div class="insight-item">
+                                <div class="insight-value">3</div>
+                                <div class="insight-label">Active interventions</div>
+                            </div>
+                            
+                            <div style="margin-top: 20px; padding: 12px; background: #e8f5e8; border-radius: 8px;">
+                                <div style="font-size: 0.8rem; font-weight: 600; color: #2d5a3d; margin-bottom: 4px;">Trend Alert</div>
+                                <div style="font-size: 0.7rem; color: #666;">Sauces showing consistent low waste - consider promoting successful items</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Features Section -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon" style="background: #ff4757;">⚡</div>
+                <div class="feature-title">Real-Time Intervention</div>
+                <div class="feature-description">Unlike competitors' after-the-fact reporting, get instant alerts when waste thresholds are exceeded with actionable next steps.</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon" style="background: #3742fa;">📱</div>
+                <div class="feature-title">Instagram-Style Feed</div>
+                <div class="feature-description">Scroll through insights like social media. Zero training required - your team already knows how to use it.</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon" style="background: #2ed573;">🎯</div>
+                <div class="feature-title">Actionable Intelligence</div>
+                <div class="feature-description">Every insight comes with specific recommendations. No more wondering "what do I do with this data?"</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon" style="background: #ffa502;">👥</div>
+                <div class="feature-title">Team Collaboration</div>
+                <div class="feature-description">Share insights, assign actions, and track team progress on waste reduction goals.</div>
+            </div>
+        </div>
+
+        <!-- Competitive Comparison -->
+        <div class="comparison">
+            <h2>How We're Different</h2>
+            <p>While competitors show you what happened yesterday, we help you change what happens today.</p>
+            
+            <div class="vs-grid">
+                <div class="competitor-side">
+                    <h3>Traditional Competitors</h3>
+                    <ul style="text-align: left; margin-top: 16px; list-style: none;">
+                        <li>❌ Kitchen waste only (33% of problem)</li>
+                        <li>❌ Historical reporting</li>
+                        <li>❌ Complex tables and charts</li>
+                        <li>❌ Requires training</li>
+                        <li>❌ Generic dashboards</li>
+                    </ul>
+                </div>
+                
+                <div class="vs-divider">VS</div>
+                
+                <div class="competitor-side">
+                    <h3>CPIsight Advantage</h3>
+                    <ul style="text-align: left; margin-top: 16px; list-style: none;">
+                        <li>✅ Plate waste focus (66% of problem)</li>
+                        <li>✅ Real-time interventions</li>
+                        <li>✅ Instagram-style interface</li>
+                        <li>✅ Intuitive, zero training</li>
+                        <li>✅ Custom-built for food waste</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

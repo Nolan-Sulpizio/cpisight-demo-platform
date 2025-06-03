@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPIsight Interactive Prototype</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8faf9;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+
+        /* Technical Performance Indicators */
+        .performance-metrics {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            z-index: 1000;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header-banner h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+
+        .header-banner p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .demo-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .demo-tab {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .demo-tab.active {
+            background: #2d5a3d;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45, 90, 61, 0.3);
+        }
+
+        .demo-tab:not(.active):hover {
+            background: #f5f7f5;
+            transform: translateY(-1px);
+        }
+
+        .demo-content {
+            display: none;
+        }
+
+        .demo-content.active {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Demo Styles */
+        .mobile-demo {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .mobile-frame {
+            width: 320px;
+            height: 640px;
+            border: 4px solid #333;
+            border-radius: 28px;
+            background: #000;
+            padding: 8px;
+            position: relative;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .mobile-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mobile-header {
+            background: rgba(255,255,255,0.95);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-weight: bold;
+            color: #2d5a3d;
+            font-size: 1.2rem;
+        }
+
+        .search-bar {
+            background: #f1f3f4;
+            border-radius: 20px;
+            padding: 8px 16px;
+            width: 160px;
+            border: none;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #2d5a3d;
+            width: 180px;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #2ed573;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .feed-container {
+            padding: 16px;
+            height: calc(100% - 80px);
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .feed-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .feed-container::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .feed-container::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+        }
+
+        .feed-card {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .feed-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .feed-card.new-card {
+            animation: slideInFromTop 0.5s ease;
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-card { border-left: 4px solid #ff4757; }
+        .insight-card { border-left: 4px solid #3742fa; }
+        .metric-card { border-left: 4px solid #2ed573; }
+        .action-card { border-left: 4px solid #ffa502; }
+
+        .card-header {
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .card-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .alert-icon { background: #ff4757; }
+        .insight-icon { background: #3742fa; }
+        .metric-icon { background: #2ed573; }
+        .action-icon { background: #ffa502; }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card-time {
+            font-size: 0.7rem;
+            color: #999;
+            margin-left: auto;
+        }
+
+        .card-content {
+            padding: 16px 18px;
+        }
+
+        .card-metric {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d5a3d;
+            margin-bottom: 6px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+        }
+
+        .card-description {
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .card-chart {
+            height: 50px;
+            background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+            margin: 12px 0;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 3px;
+            background: #1976d2;
+            border-radius: 2px;
+            animation: chartGrow 2s ease;
+        }
+
+        @keyframes chartGrow {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #2d5a3d;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f1f3f4;
+            color: #666;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        /* Desktop Demo Styles */
+        .desktop-demo {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        .desktop-header {
+            background: white;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: #f1f3f4;
+            color: #666;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .nav-tab.active {
+            background: #2d5a3d;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: #e8e8e8;
+        }
+
+        .desktop-content {
+            display: grid;
+            grid-template-columns: 280px 1fr 260px;
+            min-height: 500px;
+        }
+
+        .sidebar {
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            padding: 24px;
+        }
+
+        .filter-section {
+            margin-bottom: 28px;
+        }
+
+        .filter-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .filter-option {
+            padding: 8px 14px;
+            margin: 6px 0;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .filter-option:hover {
+            background: #e8f5e8;
+            border-color: #2d5a3d;
+        }
+
+        .filter-option.active {
+            background: #2d5a3d;
+            color: white;
+        }
+
+        .main-feed {
+            padding: 24px;
+            overflow-y: auto;
+            background: white;
+        }
+
+        .desktop-card {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #f0f0f0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .desktop-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .desktop-card-header {
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .desktop-card-content {
+            padding: 24px;
+        }
+
+        .insights-panel {
+            background: #f8f9fa;
+            border-left: 1px solid #e0e0e0;
+            padding: 24px;
+        }
+
+        .insight-item {
+            padding: 16px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+        }
+
+        .insight-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        }
+
+        .insight-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2d5a3d;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+        }
+
+        .insight-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Technical Implementation Notes */
+        .tech-notes {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 24px;
+            border-radius: 12px;
+            margin: 30px 0;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .tech-notes h3 {
+            color: #4fc3f7;
+            margin-bottom: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .tech-notes .highlight {
+            background: rgba(79, 195, 247, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .demo-container {
+                padding: 10px;
+            }
+            
+            .mobile-demo {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .desktop-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar, .insights-panel {
+                display: none;
+            }
+        }
+
+        /* Loading States */
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2d5a3d;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Performance Metrics for Technical Demo -->
+    <div class="performance-metrics">
+        <div>FPS: <span id="fps">60</span></div>
+        <div>Memory: <span id="memory">12.4MB</span></div>
+        <div>Latency: <span id="latency">23ms</span></div>
+    </div>
+
+    <!-- Header Banner -->
+    <div class="header-banner">
+        <h1>CPIsight Interactive Prototype</h1>
+        <p>Real-time Food Waste Intelligence Platform</p>
+    </div>
+
+    <!-- Main Demo Container -->
+    <div class="demo-container">
+        <!-- Demo Navigation Tabs -->
+        <div class="demo-tabs">
+            <div class="demo-tab active" onclick="switchDemo('mobile')">Mobile Experience</div>
+            <div class="demo-tab" onclick="switchDemo('desktop')">Desktop Dashboard</div>
+            <div class="demo-tab" onclick="switchDemo('technical')">Technical Architecture</div>
+        </div>
+
+        <!-- Mobile Demo -->
+        <div class="demo-content active" id="mobile-demo">
+            <div class="mobile-demo">
+                <div class="mobile-frame">
+                    <div class="mobile-screen">
+                        <div class="mobile-header">
+                            <div class="logo">CPIsight</div>
+                            <input type="text" class="search-bar" placeholder="Search insights...">
+                            <div class="live-indicator">
+                                <div class="pulse-dot"></div>
+                                <span>Live</span>
+                            </div>
+                        </div>
+                        
+                        <div class="feed-container" id="mobile-feed">
+                            <!-- Cards will be dynamically generated -->
+                        </div>
+                    </div>
+                </div>
+
+                <div style="max-width: 400px;">
+                    <h3 style="color: #2d5a3d; margin-bottom: 16px;">Mobile-First Design Strategy</h3>
+                    <ul style="list-style: none; color: #666; line-height: 1.6;">
+                        <li>✅ <strong>Zero Learning Curve:</strong> Familiar social media interactions</li>
+                        <li>✅ <strong>Real-time Updates:</strong> Cards appear as events happen</li>
+                        <li>✅ <strong>Actionable Insights:</strong> Every card includes next steps</li>
+                        <li>✅ <strong>Touch-Optimized:</strong> Designed for tablet/phone use in kitchen</li>
+                    </ul>
+                    
+                    <button onclick="addNewCard()" style="margin-top: 20px; padding: 10px 20px; background: #2d5a3d; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        Simulate New Alert
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop Demo -->
+        <div class="demo-content" id="desktop-demo">
+            <div class="desktop-demo">
+                <div class="desktop-header">
+                    <div class="logo" style="font-size: 1.3rem;">CPIsight Dashboard</div>
+                    <div class="nav-tabs">
+                        <button class="nav-tab active">Feed</button>
+                        <button class="nav-tab">Analytics</button>
+                        <button class="nav-tab">Reports</button>
+                        <button class="nav-tab">Settings</button>
+                    </div>
+                    <div class="live-indicator">
+                        <div class="pulse-dot"></div>
+                        <span>Live Updates</span>
+                    </div>
+                </div>
+                
+                <div class="desktop-content">
+                    <!-- Sidebar Filters -->
+                    <div class="sidebar">
+                        <div class="filter-section">
+                            <div class="filter-title">Time Range</div>
+                            <div class="filter-option active" onclick="toggleFilter(this)">Today</div>
+                            <div class="filter-option" onclick="toggleFilter(this)">This Week</div>
+                            <div class="filter-option" onclick="toggleFilter(this)">This Month</div>
+                        </div>
+                        
+                        <div class="filter-section">
+                            <div class="filter-title">Food Categories</div>
+                            <div class="filter-option active" onclick="toggleFilter(this)">All Items</div>
+                            <div class="filter-option" onclick="toggleFilter(this)">Hot Entrees</div>
+                            <div class="filter-option" onclick="toggleFilter(this)">Sandwiches</div>
+                            <div class="filter-option" onclick="toggleFilter(this)">Sauces</div>
+                        </div>
+                        
+                        <div class="filter-section">
+                            <div class="filter-title">Alert Level</div>
+                            <div class="filter-option" onclick="toggleFilter(this)">Critical</div>
+                            <div class="filter-option active" onclick="toggleFilter(this)">High</div>
+                            <div class="filter-option" onclick="toggleFilter(this)">Medium</div>
+                            <div class="filter-option" onclick="toggleFilter(this)">Low</div>
+                        </div>
+                    </div>
+
+                    <!-- Main Feed -->
+                    <div class="main-feed" id="desktop-feed">
+                        <!-- Desktop cards will be generated here -->
+                    </div>
+
+                    <!-- Insights Panel -->
+                    <div class="insights-panel">
+                        <div style="font-weight: 600; margin-bottom: 16px; color: #2d5a3d;">Live Insights</div>
+                        
+                        <div class="insight-item">
+                            <div class="insight-value" id="savings-metric">$180</div>
+                            <div class="insight-label">Weekly savings potential</div>
+                        </div>
+                        
+                        <div class="insight-item">
+                            <div class="insight-value" id="peak-waste">67%</div>
+                            <div class="insight-label">Peak waste time (6:30-7:30 PM)</div>
+                        </div>
+                        
+                        <div class="insight-item">
+                            <div class="insight-value" id="active-interventions">3</div>
+                            <div class="insight-label">Active interventions</div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; padding: 12px; background: #e8f5e8; border-radius: 8px;">
+                            <div style="font-size: 0.8rem; font-weight: 600; color: #2d5a3d; margin-bottom: 4px;">Trend Alert</div>
+                            <div style="font-size: 0.7rem; color: #666;">Sauces showing consistent low waste - consider promoting successful items</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Architecture Demo -->
+        <div class="demo-content" id="technical-demo">
+            <div class="tech-notes">
+                <h3>Real-time Data Architecture</h3>
+                <div>
+                    • <span class="highlight">WebSocket connections</span> for sub-second alert delivery<br>
+                    • <span class="highlight">Event-driven architecture</span> with Azure Service Bus<br>
+                    • <span class="highlight">React Query</span> for optimistic UI updates<br>
+                    • <span class="highlight">IndexedDB caching</span> for offline functionality
+                </div>
+            </div>
+
+            <div class="tech-notes">
+                <h3>Performance Targets (Base Studio Design Reference)</h3>
+                <div>
+                    • <span class="highlight">Initial Load:</span> < 2 seconds (including data)<br>
+                    • <span class="highlight">Card Animations:</span> 60fps on mobile devices<br>
+                    • <span class="highlight">Memory Usage:</span> < 50MB sustained<br>
+                    • <span class="highlight">Bundle Size:</span> < 500KB gzipped
+                </div>
+            </div>
+
+            <div class="tech-notes">
+                <h3>Component Architecture for Development Team</h3>
+                <div>
+                    • <span class="highlight">FeedCard.tsx:</span> Reusable card component with type variants<br>
+                    • <span class="highlight">FeedContainer.tsx:</span> Virtual scrolling for performance<br>
+                    • <span class="highlight">AlertSystem.tsx:</span> Real-time notification management<br>
+                    • <span class="highlight">InsightEngine.ts:</span> ML model integration layer
+                </div>
+            </div>
+
+            <div class="tech-notes">
+                <h3>Competitive Technical Advantages</h3>
+                <div>
+                    • <span class="highlight">Progressive Web App:</span> Native-like experience without app store<br>
+                    • <span class="highlight">Edge Computing:</span> Local processing reduces latency<br>
+                    • <span class="highlight">Micro-interactions:</span> UI feedback within 100ms<br>
+                    • <span class="highlight">Accessibility:</span> WCAG 2.1 AA compliant from day one
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification for Demo -->
+    <div class="notification" id="notification">
+        New waste alert detected!
+    </div>
+
+    <script>
+        // Global state management
+        let currentDemo = 'mobile';
+        let cardCounter = 0;
+        let performanceInterval;
+
+        // Sample data for realistic prototype
+        const sampleCards = [
+            {
+                type: 'alert',
+                title: 'Critical Waste Alert',
+                metric: '73.6%',
+                description: 'Chickpea wraps showing unusually high waste. Consider reducing portions or checking preparation timing.',
+                time: '2m ago'
+            },
+            {
+                type: 'insight',
+                title: 'Peak Waste Pattern',
+                description: 'Dinner service (6:30-7:30 PM) consistently shows highest waste rates. Consider dynamic portion adjustments.',
+                time: '15m ago'
+            },
+            {
+                type: 'metric',
+                title: 'Today\'s Performance',
+                metric: '34.8%',
+                description: 'Average waste rate today. Down 5.2% from yesterday!',
+                time: 'Live'
+            },
+            {
+                type: 'action',
+                title: 'Suggested Intervention',
+                description: 'Reduce fried chicken batch sizes after 6 PM to prevent waste. Potential savings: $180/week',
+                time: '1h ago'
+            }
+        ];
+
+        // Demo switching functionality
+        function switchDemo(demoType) {
+            // Update tab states
+            document.querySelectorAll('.demo-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update content visibility
+            document.querySelectorAll('.demo-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(demoType + '-demo').classList.add('active');
+            
+            currentDemo = demoType;
+            
+            // Initialize demo-specific content
+            if (demoType === 'mobile') {
+                initializeMobileFeed();
+            } else if (demoType === 'desktop') {
+                initializeDesktopFeed();
+            }
+        }
+
+        // Filter interaction for desktop demo
+        function toggleFilter(element) {
+            const section = element.parentElement;
+            section.querySelectorAll('.filter-option').forEach(option => option.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Simulate filter effect
+            showNotification(`Filter applied: ${element.textContent}`);
+        }
+
+        // Mobile feed initialization
+        function initializeMobileFeed() {
+            const container = document.getElementById('mobile-feed');
+            container.innerHTML = '';
+            
+            sampleCards.forEach((card, index) => {
+                setTimeout(() => {
+                    const cardElement = createMobileCard(card);
+                    container.appendChild(cardElement);
+                }, index * 200);
+            });
+        }
+
+        // Desktop feed initialization  
+        function initializeDesktopFeed() {
+            const container = document.getElementById('desktop-feed');
+            container.innerHTML = '';
+            
+            // Create enhanced desktop cards
+            const desktopCard1 = createDesktopCard({
+                type: 'alert',
+                title: 'Critical Waste Threshold Exceeded',
+                subtitle: 'Chickpea Lettuce Wraps • 2 minutes ago',
+                metric: '73.6%',
+                description: 'Waste rate significantly above 45% threshold',
+                actions: ['Check prep timing and storage', 'Reduce portion sizes by 15%', 'Monitor next 2 hours closely']
+            });
+            
+            const desktopCard2 = createDesktopCard({
+                type: 'metric',
+                title: 'Live Performance Dashboard',
+                subtitle: 'Updated every 30 seconds',
+                metrics: [
+                    {value: '34.8%', label: 'Overall Waste Rate'},
+                    {value: '-5.2%', label: 'vs Yesterday', positive: true},
+                    {value: '1,247', label: 'Plates Analyzed'}
+                ]
+            });
+            
+            container.appendChild(desktopCard1);
+            container.appendChild(desktopCard2);
+        }
+
+        // Create mobile card element
+        function createMobileCard(card) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = `feed-card ${card.type}-card new-card`;
+            
+            const iconMap = {
+                alert: '!',
+                insight: '💡',
+                metric: '📊',
+                action: '⚡'
+            };
+            
+            cardDiv.innerHTML = `
+                <div class="card-header">
+                    <div class="card-icon ${card.type}-icon">${iconMap[card.type]}</div>
+                    <div class="card-title">${card.title}</div>
+                    <div class="card-time">${card.time}</div>
+                </div>
+                <div class="card-content">
+                    ${card.metric ? `<div class="card-metric">${card.metric}</div>` : ''}
+                    <div class="card-description">${card.description}</div>
+                    ${card.type === 'insight' ? '<div class="card-chart"><div class="chart-line"></div></div>' : ''}
+                    ${card.type === 'action' ? `
+                        <div class="action-buttons">
+                            <button class="action-btn btn-primary">Apply</button>
+                            <button class="action-btn btn-secondary">Later</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            // Add click interaction
+            cardDiv.addEventListener('click', () => {
+                cardDiv.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    cardDiv.style.transform = 'scale(1)';
+                    showNotification(`Opened: ${card.title}`);
+                }, 150);
+            });
+            
+            return cardDiv;
+        }
+
+        // Create desktop card element
+        function createDesktopCard(card) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = `desktop-card ${card.type}-card`;
+            
+            let content = `
+                <div class="desktop-card-header">
+                    <div class="card-icon ${card.type}-icon">${card.type === 'alert' ? '!' : '📊'}</div>
+                    <div>
+                        <div class="card-title" style="font-size: 1rem;">${card.title}</div>
+                        <div style="font-size: 0.8rem; color: #999;">${card.subtitle}</div>
+                    </div>
+                </div>
+                <div class="desktop-card-content">
+            `;
+            
+            if (card.metrics) {
+                content += '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">';
+                card.metrics.forEach(metric => {
+                    content += `
+                        <div style="text-align: center;">
+                            <div class="card-metric" style="font-size: 1.8rem; ${metric.positive ? 'color: #2ed573;' : ''}">${metric.value}</div>
+                            <div class="card-description">${metric.label}</div>
+                        </div>
+                    `;
+                });
+                content += '</div>';
+            } else {
+                content += `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <div class="card-metric" style="font-size: 2rem;">${card.metric}</div>
+                            <div class="card-description">${card.description}</div>
+                        </div>
+                        <div style="background: #f8f9fa; border-radius: 8px; padding: 12px;">
+                            <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 8px;">Recommended Actions:</div>
+                            <div style="font-size: 0.8rem; color: #666; line-height: 1.4;">
+                                ${card.actions.map(action => `• ${action}`).join('<br>')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            content += '</div>';
+            cardDiv.innerHTML = content;
+            
+            return cardDiv;
+        }
+
+        // Add new card simulation
+        function addNewCard() {
+            const newAlerts = [
+                {
+                    type: 'alert',
+                    title: 'Batch Size Alert',
+                    metric: '89.2%',
+                    description: 'Fried chicken waste exceeding target. Consider smaller batch sizes for dinner service.',
+                    time: 'Just now'
+                },
+                {
+                    type: 'insight',
+                    title: 'Menu Optimization',
+                    description: 'Black bean salsa showing 0% waste - consider featuring more prominently.',
+                    time: 'Just now'
+                }
+            ];
+            
+            const randomAlert = newAlerts[Math.floor(Math.random() * newAlerts.length)];
+            
+            if (currentDemo === 'mobile') {
+                const container = document.getElementById('mobile-feed');
+                const newCard = createMobileCard(randomAlert);
+                container.insertBefore(newCard, container.firstChild);
+                
+                // Update insights
+                updateLiveMetrics();
+            }
+            
+            showNotification('New waste alert detected!');
+        }
+
+        // Update live metrics simulation
+        function updateLiveMetrics() {
+            const savings = document.getElementById('savings-metric');
+            const peakWaste = document.getElementById('peak-waste');
+            const interventions = document.getElementById('active-interventions');
+            
+            if (savings) {
+                const newSavings = parseInt(savings.textContent.replace('$', '')) + Math.floor(Math.random() * 20);
+                savings.textContent = `$${newSavings}`;
+            }
+            
+            if (interventions) {
+                const current = parseInt(interventions.textContent);
+                interventions.textContent = current + 1;
+            }
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Performance monitoring simulation
+        function updatePerformanceMetrics() {
+            const fps = document.getElementById('fps');
+            const memory = document.getElementById('memory');
+            const latency = document.getElementById('latency');
+            
+            fps.textContent = Math.floor(Math.random() * 5) + 58;
+            memory.textContent = (Math.random() * 3 + 12).toFixed(1) + 'MB';
+            latency.textContent = Math.floor(Math.random() * 10) + 20 + 'ms';
+        }
+
+        // Initialize demo
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMobileFeed();
+            
+            // Start performance monitoring
+            performanceInterval = setInterval(updatePerformanceMetrics, 1000);
+            
+            // Simulate periodic updates
+            setInterval(() => {
+                if (Math.random() > 0.7) {  // 30% chance every 5 seconds
+                    updateLiveMetrics();
+                }
+            }, 5000);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (performanceInterval) {
+                clearInterval(performanceInterval);
+            }
+        });
+    </script>
+</body>
+</html>

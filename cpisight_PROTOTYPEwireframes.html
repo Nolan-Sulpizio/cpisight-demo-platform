@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPIsight Interactive Prototype - Complete Technical Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8faf9;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+
+        /* Performance Metrics */
+        .performance-metrics {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            z-index: 1000;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            min-width: 140px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 2px 0;
+        }
+
+        .metric-value {
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+
+        /* Header Banner */
+        .header-banner {
+            background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header-banner h1 {
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header-banner p {
+            opacity: 0.95;
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        /* Demo Container */
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Tab Navigation */
+        .demo-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .demo-tab {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(45, 90, 61, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .demo-tab:hover::before {
+            left: 100%;
+        }
+
+        .demo-tab.active {
+            background: #2d5a3d;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 90, 61, 0.3);
+        }
+
+        .demo-tab:not(.active):hover {
+            background: #f8faf9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Content Areas */
+        .demo-content {
+            display: none;
+            animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .demo-content.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Demo Styles */
+        .mobile-demo {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 48px;
+            align-items: flex-start;
+        }
+
+        .mobile-frame {
+            width: 340px;
+            height: 680px;
+            border: 4px solid #1a1a1a;
+            border-radius: 32px;
+            background: #000;
+            padding: 12px;
+            position: relative;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+        }
+
+        .mobile-frame::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+        }
+
+        .mobile-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mobile-header {
+            background: rgba(255,255,255,0.96);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .logo {
+            font-weight: 800;
+            color: #2d5a3d;
+            font-size: 1.3rem;
+        }
+
+        .search-bar {
+            background: #f1f3f4;
+            border-radius: 24px;
+            padding: 10px 18px;
+            width: 160px;
+            border: none;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.2);
+            width: 180px;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: #2ed573;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .feed-container {
+            padding: 20px;
+            height: calc(100% - 90px);
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .feed-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .feed-container::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .feed-container::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+        }
+
+        /* Card Styles */
+        .feed-card {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            transform: translateY(0);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .feed-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .feed-card.new-card {
+            animation: slideInFromTop 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-card { border-left: 5px solid #ff4757; }
+        .insight-card { border-left: 5px solid #3742fa; }
+        .metric-card { border-left: 5px solid #2ed573; }
+        .action-card { border-left: 5px solid #ffa502; }
+
+        .card-header {
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .alert-icon { background: #ff4757; }
+        .insight-icon { background: #3742fa; }
+        .metric-icon { background: #2ed573; }
+        .action-icon { background: #ffa502; }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .card-time {
+            font-size: 0.75rem;
+            color: #95a5a6;
+            margin-left: auto;
+            font-weight: 500;
+        }
+
+        .card-content {
+            padding: 20px 22px;
+        }
+
+        .card-metric {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #2d5a3d;
+            margin-bottom: 8px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+        }
+
+        .card-description {
+            font-size: 0.85rem;
+            color: #5a6c7d;
+            line-height: 1.5;
+        }
+
+        .card-chart {
+            height: 60px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+            margin: 16px 0;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #1976d2, #42a5f5);
+            border-radius: 2px;
+            animation: chartGrow 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes chartGrow {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2d5a3d;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f1f3f4;
+            color: #5a6c7d;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        /* Desktop Demo Styles */
+        .desktop-demo {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+            min-height: 700px;
+        }
+
+        .desktop-header {
+            background: white;
+            padding: 24px 32px;
+            border-bottom: 1px solid #e8ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            border-radius: 16px;
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .nav-tab.active {
+            background: #2d5a3d;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(45, 90, 61, 0.25);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .desktop-content {
+            display: grid;
+            grid-template-columns: 300px 1fr 280px;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            background: #f8f9fa;
+            border-right: 1px solid #e8ecef;
+            padding: 32px 24px;
+        }
+
+        .filter-section {
+            margin-bottom: 32px;
+        }
+
+        .filter-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-option {
+            padding: 12px 18px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #5a6c7d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-weight: 500;
+        }
+
+        .filter-option:hover {
+            background: #e8f5e8;
+            border-color: #2d5a3d;
+            transform: translateX(4px);
+        }
+
+        .filter-option.active {
+            background: #2d5a3d;
+            color: white;
+            border-color: #2d5a3d;
+        }
+
+        .main-feed {
+            padding: 32px;
+            overflow-y: auto;
+            background: white;
+        }
+
+        .desktop-card {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            border: 1px solid #f1f3f5;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .desktop-card:hover {
+            box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
+        }
+
+        .desktop-card-header {
+            padding: 24px 28px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .desktop-card-content {
+            padding: 28px;
+        }
+
+        .insights-panel {
+            background: #f8f9fa;
+            border-left: 1px solid #e8ecef;
+            padding: 32px 24px;
+        }
+
+        .panel-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #2d5a3d;
+            font-size: 1.1rem;
+        }
+
+        .insight-item {
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .insight-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .insight-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #2d5a3d;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+        }
+
+        .insight-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* Technical Architecture Styles */
+        .tech-demo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .tech-section {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        .tech-title {
+            color: #2d5a3d;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tech-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2d5a3d, #4a7c59);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .tech-content {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 24px;
+            border-radius: 12px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-top: 16px;
+        }
+
+        .tech-highlight {
+            background: rgba(79, 195, 247, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #4fc3f7;
+        }
+
+        .architecture-diagram {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .layer {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #2d5a3d;
+        }
+
+        .layer-title {
+            font-weight: 700;
+            color: #2d5a3d;
+            margin-bottom: 8px;
+        }
+
+        .layer-description {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        /* Interactive Elements */
+        .demo-controls {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .control-button {
+            background: #2d5a3d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 8px 8px 8px 0;
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            background: #3d6a4d;
+            transform: translateY(-2px);
+        }
+
+        .control-button.secondary {
+            background: #f1f3f4;
+            color: #5a6c7d;
+        }
+
+        .control-button.secondary:hover {
+            background: #e9ecef;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            background: #2d5a3d;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transform: translateX(400px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            font-weight: 600;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Status Indicators */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .status-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .status-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .status-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #2d5a3d;
+            margin-bottom: 8px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+        }
+
+        .status-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .mobile-demo {
+                grid-template-columns: 1fr;
+                justify-items: center;
+                gap: 32px;
+            }
+            
+            .desktop-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar, .insights-panel {
+                display: none;
+            }
+            
+            .tech-demo {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .demo-container {
+                padding: 16px;
+            }
+            
+            .mobile-frame {
+                width: 300px;
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Performance Metrics -->
+    <div class="performance-metrics">
+        <div class="metric-row">
+            <span>FPS:</span>
+            <span class="metric-value" id="fps">60</span>
+        </div>
+        <div class="metric-row">
+            <span>Memory:</span>
+            <span class="metric-value" id="memory">12.4MB</span>
+        </div>
+        <div class="metric-row">
+            <span>Latency:</span>
+            <span class="metric-value" id="latency">23ms</span>
+        </div>
+        <div class="metric-row">
+            <span>Updates:</span>
+            <span class="metric-value" id="updates">0</span>
+        </div>
+    </div>
+
+    <!-- Header Banner -->
+    <div class="header-banner">
+        <h1>CPIsight Complete Technical Prototype</h1>
+        <p>Enterprise-Grade Food Waste Intelligence Platform</p>
+    </div>
+
+    <!-- Main Demo Container -->
+    <div class="demo-container">
+        <!-- Demo Navigation Tabs -->
+        <div class="demo-tabs">
+            <button class="demo-tab active" onclick="switchDemo('mobile')">Mobile Experience</button>
+            <button class="demo-tab" onclick="switchDemo('desktop')">Desktop Dashboard</button>
+            <button class="demo-tab" onclick="switchDemo('technical')">Technical Architecture</button>
+        </div>
+
+        <!-- Mobile Demo -->
+        <div class="demo-content active" id="mobile-demo">
+            <div class="mobile-demo">
+                <div class="mobile-frame">
+                    <div class="mobile-screen">
+                        <div class="mobile-header">
+                            <div class="logo">CPIsight</div>
+                            <input type="text" class="search-bar" placeholder="Search insights..." 
+                                   onkeyup="handleSearch(this.value)">
+                            <div class="live-indicator">
+                                <div class="pulse-dot"></div>
+                                <span>Live</span>
+                            </div>
+                        </div>
+                        
+                        <div class="feed-container" id="mobile-feed">
+                            <!-- Cards will be dynamically generated -->
+                        </div>
+                    </div>
+                </div>
+
+                <div style="max-width: 480px;">
+                    <h3 style="color: #2d5a3d; margin-bottom: 20px; font-size: 1.4rem;">Mobile-First Architecture</h3>
+                    
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-value" id="mobile-cards">4</div>
+                            <div class="status-label">Active Cards</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-value" id="mobile-alerts">2</div>
+                            <div class="status-label">Critical Alerts</div>
+                        </div>
+                    </div>
+                    
+                    <ul style="list-style: none; color: #6c757d; line-height: 1.8; margin: 24px 0;">
+                        <li>✅ <strong>Progressive Web App:</strong> Native performance without app store friction</li>
+                        <li>✅ <strong>Offline-First:</strong> ServiceWorker caching for kitchen reliability</li>
+                        <li>✅ <strong>Real-time Sync:</strong> WebSocket connections for instant updates</li>
+                        <li>✅ <strong>Touch Optimized:</strong> Gesture-based interactions for tablet use</li>
+                    </ul>
+                    
+                    <div class="demo-controls">
+                        <button class="control-button" onclick="addNewCard()">Simulate Alert</button>
+                        <button class="control-button secondary" onclick="clearFeed()">Clear Feed</button>
+                        <button class="control-button secondary" onclick="toggleRealTime()">Toggle Real-time</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop Demo -->
+        <div class="demo-content" id="desktop-demo">
+            <div class="desktop-demo">
+                <div class="desktop-header">
+                    <div class="logo" style="font-size: 1.4rem;">CPIsight Enterprise Dashboard</div>
+                    <div class="nav-tabs">
+                        <button class="nav-tab active" onclick="switchDesktopTab('feed')">Live Feed</button>
+                        <button class="nav-tab" onclick="switchDesktopTab('analytics')">Analytics</button>
+                        <button class="nav-tab" onclick="switchDesktopTab('reports')">Reports</button>
+                        <button class="nav-tab" onclick="switchDesktopTab('settings')">Settings</button>
+                    </div>
+                    <div class="live-indicator">
+                        <div class="pulse-dot"></div>
+                        <span>System Online</span>
+                    </div>
+                </div>
+                
+                <div class="desktop-content">
+                    <!-- Sidebar Filters -->
+                    <div class="sidebar">
+                        <div class="filter-section">
+                            <div class="filter-title">Time Range</div>
+                            <div class="filter-option active" onclick="applyFilter('time', 'today')">Today</div>
+                            <div class="filter-option" onclick="applyFilter('time', 'week')">This Week</div>
+                            <div class="filter-option" onclick="applyFilter('time', 'month')">This Month</div>
+                            <div class="filter-option" onclick="applyFilter('time', 'quarter')">This Quarter</div>
+                        </div>
+                        
+                        <div class="filter-section">
+                            <div class="filter-title">Categories</div>
+                            <div class="filter-option active" onclick="applyFilter('category', 'all')">All Items</div>
+                            <div class="filter-option" onclick="applyFilter('category', 'entrees')">Hot Entrees</div>
+                            <div class="filter-option" onclick="applyFilter('category', 'sandwiches')">Sandwiches</div>
+                            <div class="filter-option" onclick="applyFilter('category', 'sauces')">Sauces</div>
+                            <div class="filter-option" onclick="applyFilter('category', 'sides')">Sides</div>
+                        </div>
+                        
+                        <div class="filter-section">
+                            <div class="filter-title">Alert Level</div>
+                            <div class="filter-option" onclick="applyFilter('alert', 'critical')">Critical</div>
+                            <div class="filter-option active" onclick="applyFilter('alert', 'high')">High</div>
+                            <div class="filter-option" onclick="applyFilter('alert', 'medium')">Medium</div>
+                            <div class="filter-option" onclick="applyFilter('alert', 'low')">Low</div>
+                        </div>
+                    </div>
+
+                    <!-- Main Feed -->
+                    <div class="main-feed" id="desktop-feed">
+                        <!-- Desktop content will be generated based on active tab -->
+                    </div>
+
+                    <!-- Insights Panel -->
+                    <div class="insights-panel">
+                        <div class="panel-title">Live Insights</div>
+                        
+                        <div class="insight-item" onclick="drillDownInsight('savings')">
+                            <div class="insight-value" id="savings-metric">$2,340</div>
+                            <div class="insight-label">Monthly savings potential</div>
+                        </div>
+                        
+                        <div class="insight-item" onclick="drillDownInsight('peak')">
+                            <div class="insight-value" id="peak-waste">67%</div>
+                            <div class="insight-label">Peak waste (6:30-7:30 PM)</div>
+                        </div>
+                        
+                        <div class="insight-item" onclick="drillDownInsight('interventions')">
+                            <div class="insight-value" id="active-interventions">5</div>
+                            <div class="insight-label">Active interventions</div>
+                        </div>
+                        
+                        <div class="insight-item" onclick="drillDownInsight('efficiency')">
+                            <div class="insight-value" id="efficiency-score">87%</div>
+                            <div class="insight-label">Kitchen efficiency</div>
+                        </div>
+                        
+                        <div style="margin-top: 24px; padding: 16px; background: linear-gradient(135deg, #e8f5e8, #d4edda); border-radius: 12px;">
+                            <div style="font-size: 0.85rem; font-weight: 700; color: #2d5a3d; margin-bottom: 6px;">AI Recommendation</div>
+                            <div style="font-size: 0.75rem; color: #5a6c7d; line-height: 1.4;">Consider promoting black bean salsa - showing consistent 0% waste across all time periods</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Architecture Demo -->
+        <div class="demo-content" id="technical-demo">
+            <div class="tech-demo">
+                <!-- Real-time Architecture -->
+                <div class="tech-section">
+                    <div class="tech-title">
+                        <div class="tech-icon">🔄</div>
+                        Real-time Data Pipeline
+                    </div>
+                    <div class="tech-content">
+• <span class="tech-highlight">Azure Service Bus</span> for event streaming
+• <span class="tech-highlight">SignalR Hubs</span> for WebSocket connections  
+• <span class="tech-highlight">Redis Cache</span> for session state
+• <span class="tech-highlight">Event Sourcing</span> for audit trail
+                    </div>
+                    <div class="demo-controls">
+                        <button class="control-button" onclick="simulateDataFlow()">Test Data Flow</button>
+                        <button class="control-button secondary" onclick="showArchitecture()">View Architecture</button>
+                    </div>
+                </div>
+
+                <!-- Performance Monitoring -->
+                <div class="tech-section">
+                    <div class="tech-title">
+                        <div class="tech-icon">📊</div>
+                        Performance Monitoring
+                    </div>
+                    <div class="tech-content">
+• <span class="tech-highlight">Application Insights</span> for telemetry
+• <span class="tech-highlight">Real User Monitoring</span> < 2s load time
+• <span class="tech-highlight">Custom Metrics</span> for business KPIs
+• <span class="tech-highlight">Alert Rules</span> for system health
+                    </div>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-value" id="response-time">145ms</div>
+                            <div class="status-label">Avg Response Time</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-value" id="throughput">2.4k</div>
+                            <div class="status-label">Events/min</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ML/AI Integration -->
+                <div class="tech-section">
+                    <div class="tech-title">
+                        <div class="tech-icon">🤖</div>
+                        ML/AI Integration
+                    </div>
+                    <div class="tech-content">
+• <span class="tech-highlight">Azure ML</span> for model training/deployment
+• <span class="tech-highlight">Computer Vision</span> for food recognition
+• <span class="tech-highlight">Time Series</span> forecasting models
+• <span class="tech-highlight">Anomaly Detection</span> for waste spikes
+                    </div>
+                    <div class="demo-controls">
+                        <button class="control-button" onclick="runMLPrediction()">Run Prediction</button>
+                        <button class="control-button secondary" onclick="showModelMetrics()">Model Metrics</button>
+                    </div>
+                </div>
+
+                <!-- Security & Compliance -->
+                <div class="tech-section">
+                    <div class="tech-title">
+                        <div class="tech-icon">🔒</div>
+                        Security & Compliance
+                    </div>
+                    <div class="tech-content">
+• <span class="tech-highlight">Azure AD B2C</span> for authentication
+• <span class="tech-highlight">Key Vault</span> for secrets management
+• <span class="tech-highlight">GDPR Compliance</span> built-in
+• <span class="tech-highlight">SOC 2 Type II</span> ready architecture
+                    </div>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-value">256-bit</div>
+                            <div class="status-label">Encryption</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-value">99.9%</div>
+                            <div class="status-label">Uptime SLA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Architecture Diagram -->
+            <div class="architecture-diagram">
+                <h3 style="color: #2d5a3d; margin-bottom: 24px;">System Architecture Overview</h3>
+                <div class="layer">
+                    <div class="layer-title">Presentation Layer</div>
+                    <div class="layer-description">React PWA, Mobile-first responsive design, Offline capabilities</div>
+                </div>
+                <div class="layer">
+                    <div class="layer-title">API Gateway</div>
+                    <div class="layer-description">Azure API Management, Rate limiting, Authentication, Monitoring</div>
+                </div>
+                <div class="layer">
+                    <div class="layer-title">Business Logic</div>
+                    <div class="layer-description">Azure Functions, Service Bus, Event-driven architecture</div>
+                </div>
+                <div class="layer">
+                    <div class="layer-title">Data Layer</div>
+                    <div class="layer-description">Cosmos DB, Azure ML, Redis Cache, Blob Storage</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div class="notification" id="notification">
+        System update complete!
+    </div>
+
+    <script>
+        // Global State Management
+        class CPIsightState {
+            constructor() {
+                this.currentDemo = 'mobile';
+                this.currentDesktopTab = 'feed';
+                this.filters = {
+                    time: 'today',
+                    category: 'all',
+                    alert: 'high'
+                };
+                this.cards = [];
+                this.realTimeEnabled = true;
+                this.performanceMetrics = {
+                    fps: 60,
+                    memory: 12.4,
+                    latency: 23,
+                    updates: 0
+                };
+                this.insights = {
+                    savings: 2340,
+                    peakWaste: 67,
+                    interventions: 5,
+                    efficiency: 87
+                };
+            }
+
+            updateMetric(metric, value) {
+                this.performanceMetrics[metric] = value;
+                document.getElementById(metric).textContent = 
+                    typeof value === 'number' && metric === 'memory' ? `${value}MB` :
+                    typeof value === 'number' && metric === 'latency' ? `${value}ms` :
+                    value;
+            }
+
+            incrementUpdates() {
+                this.performanceMetrics.updates++;
+                this.updateMetric('updates', this.performanceMetrics.updates);
+            }
+        }
+
+        const appState = new CPIsightState();
+
+        // Sample Data Repositories
+        const cardTemplates = {
+            alerts: [
+                {
+                    type: 'alert',
+                    title: 'Critical Waste Alert',
+                    metric: '73.6%',
+                    description: 'Chickpea wraps showing unusually high waste. Consider reducing portions or checking preparation timing.',
+                    category: 'sandwiches'
+                },
+                {
+                    type: 'alert', 
+                    title: 'Batch Size Alert',
+                    metric: '89.2%',
+                    description: 'Fried chicken waste exceeding target. Consider smaller batch sizes for dinner service.',
+                    category: 'entrees'
+                },
+                {
+                    type: 'alert',
+                    title: 'Temperature Alert',
+                    metric: '156°F',
+                    description: 'Hot holding temperature below safe threshold. Check warming equipment immediately.',
+                    category: 'all'
+                }
+            ],
+            insights: [
+                {
+                    type: 'insight',
+                    title: 'Peak Waste Pattern',
+                    description: 'Dinner service (6:30-7:30 PM) consistently shows highest waste rates. Consider dynamic portion adjustments.',
+                    category: 'all'
+                },
+                {
+                    type: 'insight',
+                    title: 'Menu Optimization',
+                    description: 'Black bean salsa showing 0% waste - consider featuring more prominently in marketing.',
+                    category: 'sauces'
+                },
+                {
+                    type: 'insight',
+                    title: 'Seasonal Trend',
+                    description: 'Soup consumption up 34% this week due to weather. Adjust preparation schedules.',
+                    category: 'entrees'
+                }
+            ],
+            metrics: [
+                {
+                    type: 'metric',
+                    title: 'Today\'s Performance',
+                    metric: '34.8%',
+                    description: 'Average waste rate today. Down 5.2% from yesterday!',
+                    category: 'all'
+                },
+                {
+                    type: 'metric',
+                    title: 'Cost Savings',
+                    metric: '$147',
+                    description: 'Saved today through waste reduction initiatives.',
+                    category: 'all'
+                },
+                {
+                    type: 'metric',
+                    title: 'Efficiency Score',
+                    metric: '87%',
+                    description: 'Kitchen operational efficiency this week.',
+                    category: 'all'
+                }
+            ],
+            actions: [
+                {
+                    type: 'action',
+                    title: 'Suggested Intervention',
+                    description: 'Reduce fried chicken batch sizes after 6 PM to prevent waste. Potential savings: $180/week',
+                    category: 'entrees'
+                },
+                {
+                    type: 'action',
+                    title: 'Menu Engineering',
+                    description: 'Promote high-margin, low-waste items during peak hours. Focus on sauces and sides.',
+                    category: 'all'
+                },
+                {
+                    type: 'action',
+                    title: 'Staff Training',
+                    description: 'Schedule portion control training for evening shift based on waste patterns.',
+                    category: 'all'
+                }
+            ]
+        };
+
+        const desktopContent = {
+            feed: {
+                title: 'Live Activity Feed',
+                content: 'Real-time waste monitoring and alerts'
+            },
+            analytics: {
+                title: 'Advanced Analytics',
+                content: 'Deep dive into waste patterns and trends'
+            },
+            reports: {
+                title: 'Automated Reports',
+                content: 'Scheduled reports and compliance documentation'
+            },
+            settings: {
+                title: 'System Configuration',
+                content: 'Alert thresholds, integrations, and preferences'
+            }
+        };
+
+        // Demo Management Functions
+        function switchDemo(demoType) {
+            // Update tab states
+            document.querySelectorAll('.demo-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update content visibility with animation
+            document.querySelectorAll('.demo-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            setTimeout(() => {
+                document.getElementById(demoType + '-demo').classList.add('active');
+                appState.currentDemo = demoType;
+                
+                // Initialize demo-specific content
+                switch(demoType) {
+                    case 'mobile':
+                        initializeMobileFeed();
+                        break;
+                    case 'desktop':
+                        initializeDesktopFeed();
+                        break;
+                    case 'technical':
+                        initializeTechnicalDemo();
+                        break;
+                }
+                
+                showNotification(`Switched to ${demoType} demo`);
+            }, 100);
+        }
+
+        function switchDesktopTab(tabName) {
+            // Update tab states
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            appState.currentDesktopTab = tabName;
+            updateDesktopContent(tabName);
+            showNotification(`Switched to ${tabName} view`);
+        }
+
+        // Mobile Feed Management
+        function initializeMobileFeed() {
+            const container = document.getElementById('mobile-feed');
+            container.innerHTML = '';
+            appState.cards = [];
+            
+            // Load initial cards
+            const initialCards = [
+                cardTemplates.alerts[0],
+                cardTemplates.insights[0], 
+                cardTemplates.metrics[0],
+                cardTemplates.actions[0]
+            ];
+            
+            initialCards.forEach((card, index) => {
+                setTimeout(() => {
+                    addCardToFeed(card, container);
+                    updateMobileStats();
+                }, index * 300);
+            });
+        }
+
+        function addCardToFeed(cardData, container) {
+            const card = createMobileCard(cardData);
+            if (container.firstChild) {
+                container.insertBefore(card, container.firstChild);
+            } else {
+                container.appendChild(card);
+            }
+            appState.cards.unshift(cardData);
+            appState.incrementUpdates();
+        }
+
+        function createMobileCard(card) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = `feed-card ${card.type}-card new-card`;
+            
+            const iconMap = {
+                alert: '⚠️',
+                insight: '💡', 
+                metric: '📊',
+                action: '⚡'
+            };
+            
+            const timeAgo = generateTimeAgo();
+            
+            cardDiv.innerHTML = `
+                <div class="card-header">
+                    <div class="card-icon ${card.type}-icon">${iconMap[card.type]}</div>
+                    <div class="card-title">${card.title}</div>
+                    <div class="card-time">${timeAgo}</div>
+                </div>
+                <div class="card-content">
+                    ${card.metric ? `<div class="card-metric">${card.metric}</div>` : ''}
+                    <div class="card-description">${card.description}</div>
+                    ${card.type === 'insight' ? '<div class="card-chart"><div class="chart-line"></div></div>' : ''}
+                    ${card.type === 'action' ? `
+                        <div class="action-buttons">
+                            <button class="action-btn btn-primary" onclick="handleAction('apply', '${card.title}')">Apply</button>
+                            <button class="action-btn btn-secondary" onclick="handleAction('defer', '${card.title}')">Later</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            // Add interaction handlers
+            cardDiv.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('action-btn')) {
+                    animateCardClick(cardDiv);
+                    showNotification(`Opened: ${card.title}`);
+                }
+            });
+            
+            return cardDiv;
+        }
+
+        function updateMobileStats() {
+            const totalCards = appState.cards.length;
+            const criticalAlerts = appState.cards.filter(card => card.type === 'alert').length;
+            
+            document.getElementById('mobile-cards').textContent = totalCards;
+            document.getElementById('mobile-alerts').textContent = criticalAlerts;
+        }
+
+        // Desktop Dashboard Management
+        function initializeDesktopFeed() {
+            updateDesktopContent('feed');
+        }
+
+        function updateDesktopContent(tabName) {
+            const container = document.getElementById('desktop-feed');
+            const content = desktopContent[tabName];
+            
+            switch(tabName) {
+                case 'feed':
+                    renderFeedContent(container);
+                    break;
+                case 'analytics':
+                    renderAnalyticsContent(container);
+                    break;
+                case 'reports':
+                    renderReportsContent(container);
+                    break;
+                case 'settings':
+                    renderSettingsContent(container);
+                    break;
+            }
+        }
+
+        function renderFeedContent(container) {
+            container.innerHTML = `
+                <h2 style="color: #2d5a3d; margin-bottom: 24px; font-size: 1.8rem;">Live Activity Feed</h2>
+                <div id="desktop-cards-container"></div>
+            `;
+            
+            const cardsContainer = document.getElementById('desktop-cards-container');
+            
+            // Create desktop versions of cards
+            const desktopCards = [
+                {
+                    type: 'alert',
+                    title: 'Critical Waste Threshold Exceeded',
+                    subtitle: 'Chickpea Lettuce Wraps • 2 minutes ago',
+                    metric: '73.6%',
+                    description: 'Waste rate significantly above 45% threshold',
+                    actions: ['Check prep timing and storage', 'Reduce portion sizes by 15%', 'Monitor next 2 hours closely']
+                },
+                {
+                    type: 'metric',
+                    title: 'Live Performance Dashboard', 
+                    subtitle: 'Updated every 30 seconds',
+                    metrics: [
+                        {value: '34.8%', label: 'Overall Waste Rate'},
+                        {value: '-5.2%', label: 'vs Yesterday', positive: true},
+                        {value: '1,247', label: 'Plates Analyzed'}
+                    ]
+                }
+            ];
+            
+            desktopCards.forEach(card => {
+                cardsContainer.appendChild(createDesktopCard(card));
+            });
+        }
+
+        function renderAnalyticsContent(container) {
+            container.innerHTML = `
+                <h2 style="color: #2d5a3d; margin-bottom: 24px; font-size: 1.8rem;">Advanced Analytics</h2>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-value">73.2%</div>
+                        <div class="status-label">Prediction Accuracy</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value">12</div>
+                        <div class="status-label">Active Models</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value">$48k</div>
+                        <div class="status-label">Annual Savings</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value">2.3s</div>
+                        <div class="status-label">Avg Response</div>
+                    </div>
+                </div>
+                <div style="margin-top: 32px; padding: 24px; background: #f8f9fa; border-radius: 12px;">
+                    <h3 style="color: #2d5a3d; margin-bottom: 16px;">Predictive Insights</h3>
+                    <p style="color: #6c757d; line-height: 1.6;">
+                        Machine learning models analyze historical patterns to predict waste spikes and recommend proactive interventions. 
+                        Current models show 73% accuracy in predicting waste events 2 hours in advance.
+                    </p>
+                </div>
+            `;
+        }
+
+        function renderReportsContent(container) {
+            container.innerHTML = `
+                <h2 style="color: #2d5a3d; margin-bottom: 24px; font-size: 1.8rem;">Automated Reports</h2>
+                <div style="display: grid; gap: 20px;">
+                    <div class="desktop-card">
+                        <div class="desktop-card-header">
+                            <div class="card-icon metric-icon">📄</div>
+                            <div>
+                                <div class="card-title" style="font-size: 1rem;">Weekly Waste Summary</div>
+                                <div style="font-size: 0.8rem; color: #999;">Auto-generated every Monday</div>
+                            </div>
+                        </div>
+                        <div class="desktop-card-content">
+                            <p style="color: #6c757d;">Comprehensive analysis of waste patterns, cost impact, and recommended actions.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="desktop-card">
+                        <div class="desktop-card-header">
+                            <div class="card-icon insight-icon">📊</div>
+                            <div>
+                                <div class="card-title" style="font-size: 1rem;">Compliance Dashboard</div>
+                                <div style="font-size: 0.8rem; color: #999;">Real-time compliance monitoring</div>
+                            </div>
+                        </div>
+                        <div class="desktop-card-content">
+                            <p style="color: #6c757d;">Automated reporting for health department requirements and sustainability certifications.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSettingsContent(container) {
+            container.innerHTML = `
+                <h2 style="color: #2d5a3d; margin-bottom: 24px; font-size: 1.8rem;">System Configuration</h2>
+                <div style="display: grid; gap: 24px;">
+                    <div style="background: white; padding: 24px; border-radius: 12px; border: 1px solid #e8ecef;">
+                        <h3 style="color: #2d5a3d; margin-bottom: 16px;">Alert Thresholds</h3>
+                        <div style="display: grid; gap: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Critical Waste Level:</span>
+                                <span style="font-weight: 600;">70%</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>High Waste Level:</span>
+                                <span style="font-weight: 600;">50%</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Medium Waste Level:</span>
+                                <span style="font-weight: 600;">35%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: white; padding: 24px; border-radius: 12px; border: 1px solid #e8ecef;">
+                        <h3 style="color: #2d5a3d; margin-bottom: 16px;">Integration Status</h3>
+                        <div style="display: grid; gap: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>POS System:</span>
+                                <span style="color: #2ed573; font-weight: 600;">✓ Connected</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Inventory System:</span>
+                                <span style="color: #ffa502; font-weight: 600;">⚠ Pending</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Kitchen Displays:</span>
+                                <span style="color: #2ed573; font-weight: 600;">✓ Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createDesktopCard(card) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = `desktop-card ${card.type}-card`;
+            
+            let content = `
+                <div class="desktop-card-header">
+                    <div class="card-icon ${card.type}-icon">${card.type === 'alert' ? '⚠️' : '📊'}</div>
+                    <div>
+                        <div class="card-title" style="font-size: 1.1rem;">${card.title}</div>
+                        <div style="font-size: 0.85rem; color: #999;">${card.subtitle}</div>
+                    </div>
+                </div>
+                <div class="desktop-card-content">
+            `;
+            
+            if (card.metrics) {
+                content += '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">';
+                card.metrics.forEach(metric => {
+                    content += `
+                        <div style="text-align: center;">
+                            <div class="card-metric" style="font-size: 2rem; ${metric.positive ? 'color: #2ed573;' : ''}">${metric.value}</div>
+                            <div class="card-description">${metric.label}</div>
+                        </div>
+                    `;
+                });
+                content += '</div>';
+            } else {
+                content += `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <div>
+                            <div class="card-metric" style="font-size: 2.4rem;">${card.metric}</div>
+                            <div class="card-description">${card.description}</div>
+                        </div>
+                        <div style="background: #f8f9fa; border-radius: 12px; padding: 20px;">
+                            <div style="font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: #2d5a3d;">Recommended Actions:</div>
+                            <div style="font-size: 0.85rem; color: #6c757d; line-height: 1.5;">
+                                ${card.actions.map(action => `• ${action}`).join('<br>')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            content += '</div>';
+            cardDiv.innerHTML = content;
+            
+            // Add interaction
+            cardDiv.addEventListener('click', () => {
+                animateCardClick(cardDiv);
+                showNotification(`Analyzed: ${card.title}`);
+            });
+            
+            return cardDiv;
+        }
+
+        // Technical Demo Management
+        function initializeTechnicalDemo() {
+            // Start performance simulation
+            simulatePerformanceMetrics();
+            showNotification('Technical demo initialized');
+        }
+
+        function simulateDataFlow() {
+            showNotification('Simulating real-time data flow...');
+            
+            // Animate performance metrics
+            let steps = 0;
+            const interval = setInterval(() => {
+                const latency = 23 + Math.sin(steps * 0.5) * 5;
+                const throughput = (2.4 + Math.sin(steps * 0.3) * 0.3).toFixed(1);
+                
+                appState.updateMetric('latency', Math.round(latency));
+                document.getElementById('throughput').textContent = throughput + 'k';
+                
+                steps++;
+                if (steps > 20) {
+                    clearInterval(interval);
+                    showNotification('Data flow simulation complete');
+                }
+            }, 200);
+        }
+
+        function showArchitecture() {
+            showNotification('Architecture diagram updated with real-time metrics');
+            // Could expand to show interactive architecture diagram
+        }
+
+        function runMLPrediction() {
+            showNotification('Running ML prediction model...');
+            
+            setTimeout(() => {
+                const predictions = [
+                    'High waste probability for fried items at 7 PM',
+                    'Recommend 15% portion reduction for wraps',
+                    'Salsa consumption trending up 12%'
+                ];
+                
+                const randomPrediction = predictions[Math.floor(Math.random() * predictions.length)];
+                showNotification(`ML Prediction: ${randomPrediction}`);
+            }, 1500);
+        }
+
+        function showModelMetrics() {
+            showNotification('Model accuracy: 94.2% | Training samples: 2.4M | Last updated: 2 hours ago');
+        }
+
+        // Filter and Search Functions
+        function applyFilter(filterType, value) {
+            // Update filter state
+            appState.filters[filterType] = value;
+            
+            // Update UI
+            const filterSection = event.target.parentElement;
+            filterSection.querySelectorAll('.filter-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Apply filter logic
+            const filteredCards = appState.cards.filter(card => {
+                if (filterType === 'category' && value !== 'all') {
+                    return card.category === value;
+                }
+                return true; // Other filters would be implemented here
+            });
+            
+            showNotification(`Filter applied: ${filterType} = ${value} (${filteredCards.length} items)`);
+            appState.incrementUpdates();
+        }
+
+        function handleSearch(query) {
+            if (query.length > 2) {
+                showNotification(`Searching for: "${query}"`);
+                appState.incrementUpdates();
+            }
+        }
+
+        // Interactive Functions
+        function addNewCard() {
+            const alertTypes = Object.keys(cardTemplates);
+            const randomType = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+            const cards = cardTemplates[randomType];
+            const randomCard = cards[Math.floor(Math.random() * cards.length)];
+            
+            if (appState.currentDemo === 'mobile') {
+                const container = document.getElementById('mobile-feed');
+                addCardToFeed(randomCard, container);
+                updateMobileStats();
+            }
+            
+            // Update insights
+            updateLiveInsights();
+            showNotification(`New ${randomCard.type} added: ${randomCard.title}`);
+        }
+
+        function clearFeed() {
+            if (appState.currentDemo === 'mobile') {
+                const container = document.getElementById('mobile-feed');
+                container.innerHTML = '';
+                appState.cards = [];
+                updateMobileStats();
+                showNotification('Feed cleared');
+            }
+        }
+
+        function toggleRealTime() {
+            appState.realTimeEnabled = !appState.realTimeEnabled;
+            const status = appState.realTimeEnabled ? 'enabled' : 'disabled';
+            showNotification(`Real-time updates ${status}`);
+            
+            if (appState.realTimeEnabled) {
+                startRealTimeSimulation();
+            }
+        }
+
+        function handleAction(action, cardTitle) {
+            event.stopPropagation();
+            showNotification(`Action "${action}" applied to: ${cardTitle}`);
+            appState.incrementUpdates();
+        }
+
+        function drillDownInsight(insightType) {
+            const insights = {
+                savings: 'Detailed breakdown: Kitchen efficiency +$1,200, Portion optimization +$840, Menu engineering +$300',
+                peak: 'Peak analysis: 6:30-7:30 PM shows 67% waste across all categories. Recommend dynamic pricing during peak hours.',
+                interventions: 'Active interventions: Batch size alerts (2), Temperature monitoring (1), Portion control (2)',
+                efficiency: 'Efficiency metrics: Prep time -15%, Food cost -12%, Customer satisfaction +8%'
+            };
+            
+            showNotification(insights[insightType] || 'Detailed analytics available in full dashboard');
+        }
+
+        // Animation and Visual Functions
+        function animateCardClick(cardElement) {
+            cardElement.style.transform = 'scale(0.98)';
+            cardElement.style.transition = 'transform 0.1s ease';
+            
+            setTimeout(() => {
+                cardElement.style.transform = 'scale(1)';
+                setTimeout(() => {
+                    cardElement.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                }, 100);
+            }, 100);
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Utility Functions
+        function generateTimeAgo() {
+            const options = ['Just now', '2m ago', '5m ago', '15m ago', '1h ago'];
+            return options[Math.floor(Math.random() * options.length)];
+        }
+
+        function updateLiveInsights() {
+            // Simulate live updates to insights
+            appState.insights.savings += Math.floor(Math.random() * 50);
+            appState.insights.interventions += Math.random() > 0.7 ? 1 : 0;
+            appState.insights.efficiency = Math.min(95, appState.insights.efficiency + Math.random() * 2);
+            
+            // Update UI
+            Object.keys(appState.insights).forEach(key => {
+                const element = document.getElementById(`${key === 'interventions' ? 'active-interventions' : key === 'efficiency' ? 'efficiency-score' : key + '-metric'}`);
+                if (element) {
+                    const value = appState.insights[key];
+                    element.textContent = 
+                        key === 'savings' ? `$${value.toLocaleString()}` :
+                        key === 'efficiency' ? `${Math.round(value)}%` :
+                        value;
+                }
+            });
+        }
+
+        function simulatePerformanceMetrics() {
+            setInterval(() => {
+                // Simulate realistic performance variations
+                const fps = Math.floor(Math.random() * 4) + 58; // 58-62 FPS
+                const memory = (Math.random() * 3 + 12).toFixed(1); // 12-15 MB
+                const latency = Math.floor(Math.random() * 15) + 18; // 18-33 ms
+                
+                appState.updateMetric('fps', fps);
+                appState.updateMetric('memory', parseFloat(memory));
+                appState.updateMetric('latency', latency);
+                
+                // Update technical demo metrics
+                const responseTime = document.getElementById('response-time');
+                if (responseTime) {
+                    responseTime.textContent = latency * 5 + 'ms';
+                }
+            }, 2000);
+        }
+
+        function startRealTimeSimulation() {
+            if (!appState.realTimeEnabled) return;
+            
+            setInterval(() => {
+                if (appState.realTimeEnabled && Math.random() > 0.8) {
+                    addNewCard();
+                }
+            }, 8000);
+        }
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize mobile demo
+            initializeMobileFeed();
+            
+            // Start performance monitoring
+            simulatePerformanceMetrics();
+            
+            // Start real-time simulation
+            startRealTimeSimulation();
+            
+            // Show welcome message
+            setTimeout(() => {
+                showNotification('Welcome to CPIsight Technical Prototype');
+            }, 1000);
+        });
+
+        // Export for Base Studio Design reference
+        window.CPIsight = {
+            state: appState,
+            addCard: addNewCard,
+            switchDemo: switchDemo,
+            applyFilter: applyFilter
+        };
+    </script>
+</body>
+</html>
